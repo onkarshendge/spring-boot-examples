@@ -1,5 +1,8 @@
 package com.mcnz.restful.spring.boot;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -7,14 +10,27 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ScoreService {
-	
 
 	
+	private static String pattern = "{ \"wins\":\"%s\", \"losses\":\"%s\", \"ties\": \"%s\", \"hostname\": \"%s\"}";
+	
+	private static String hostName = null;
+
+	public static String getHostName() {
+		try {
+			if(hostName == null) {
+				hostName = InetAddress.getLocalHost().getHostName();
+			}
+		} catch (UnknownHostException e) {
+			return "Not Found";
+		}
+		return hostName;
+	}
+
 	//{ "wins":"5", "losses":"3", "ties": "0"}
 	@RequestMapping(value="/score", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	public String getScore() {
-		String pattern = "{ \"wins\":\"%s\", \"losses\":\"%s\", \"ties\": \"%s\"}";
-		return String.format(pattern,  Score.WINS, Score.LOSSES, Score.TIES );
+		return String.format(pattern,  Score.WINS, Score.LOSSES, Score.TIES, getHostName());
 	
 	}
 	
@@ -23,8 +39,8 @@ public class ScoreService {
 		Score.WINS   = wins;
 		Score.TIES   = ties;
 		Score.LOSSES = losses;
-		String pattern = "{ \"wins\":\"%s\", \"losses\":\"%s\", \"ties\": \"%s\"}";
-		return String.format(pattern,  Score.WINS, Score.LOSSES, Score.TIES );	
+//		String pattern = "{ \"wins\":\"%s\", \"losses\":\"%s\", \"ties\": \"%s\"}";
+		return String.format(pattern,  Score.WINS, Score.LOSSES, Score.TIES, getHostName());	
 	}
 	
 
